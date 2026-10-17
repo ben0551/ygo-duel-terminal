@@ -23,7 +23,7 @@ export function PhaseTracker() {
       <div className="flex items-center gap-2">
         <Button
           variant="outline"
-          className="shrink-0 px-3 text-[11px]"
+          className="h-11 min-w-11 shrink-0 px-2 text-[11px] sm:px-3"
           aria-label="Previous phase"
           onClick={() => dispatch({ type: "PREVIOUS_PHASE" })}
         >
@@ -38,7 +38,7 @@ export function PhaseTracker() {
           <p
             aria-live="polite"
             aria-atomic="true"
-            className="truncate bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-lg font-extrabold uppercase tracking-wide text-transparent sm:text-xl"
+            className="truncate bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-sm font-extrabold uppercase tracking-wide text-transparent sm:text-lg md:text-xl"
           >
             {PHASE_LABELS[state.currentPhase]}
           </p>
@@ -46,7 +46,7 @@ export function PhaseTracker() {
 
         <Button
           variant="outline"
-          className="shrink-0 px-3 text-[11px]"
+          className="h-11 min-w-11 shrink-0 px-2 text-[11px] sm:px-3"
           aria-label="Next phase"
           onClick={() => dispatch({ type: "NEXT_PHASE" })}
         >
@@ -58,7 +58,7 @@ export function PhaseTracker() {
       <div
         role="group"
         aria-label="Jump to a specific phase"
-        className="flex flex-wrap gap-1.5"
+        className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible"
       >
         {PHASES.map((phase, index) => {
           const isCurrent = index === current;
@@ -71,7 +71,10 @@ export function PhaseTracker() {
               aria-current={isCurrent ? "step" : undefined}
               onClick={() => dispatch({ type: "SET_PHASE", phase })}
               className={cn(
-                "rounded-lg border px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.1em]",
+                // 44px tall on touch screens; a single scrollable row so the
+                // rail never wraps and eats vertical space on a phone.
+                "min-h-11 shrink-0 rounded-lg border px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.1em]",
+                "sm:min-h-9 sm:px-2.5",
                 "outline-none transition-all focus-visible:ring-2 focus-visible:ring-accent",
                 isCurrent
                   ? "border-accent bg-gradient-to-br from-accent to-[#6EE7FF] text-[#02121A] shadow-[0_0_20px_-4px_var(--color-accent)]"

@@ -101,7 +101,7 @@ export function SegmentedControl<T extends string>({
             onKeyDown={(event) => handleKeyDown(event, index)}
             className={cn(
               "inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2",
-              "text-[11px] font-bold uppercase tracking-[0.14em]",
+              "min-h-11 text-[11px] font-bold uppercase tracking-[0.14em] sm:min-h-9",
               "outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent",
               selected
                 ? "bg-gradient-to-br from-accent/30 to-accent-2/25 text-white shadow-[0_0_16px_-6px_var(--color-accent)]"

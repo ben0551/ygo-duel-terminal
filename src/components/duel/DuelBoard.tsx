@@ -18,8 +18,14 @@ import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 /**
  * Top-level composition of the duel tracker.
  *
- * Layout is mobile-first: a single stacked column that becomes a two-column
- * board (arena + side panel) from the `lg` breakpoint up.
+ * Two layouts share one component tree:
+ *
+ * - **Phone (< md).** The two life-point panels sit side by side so both totals
+ *   are on screen at once, and the turn-player controls move up into the turn
+ *   bar (there is no room for a centre column between the panels). The turn bar
+ *   is sticky, so the current phase stays visible while you scroll.
+ * - **Tablet / desktop (>= md).** The panels get a centre column with the VS
+ *   badge, and from `lg` the side panel docks alongside the board.
  */
 export function DuelBoard() {
   const { dispatch } = useDuel();
@@ -36,13 +42,13 @@ export function DuelBoard() {
   });
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
-      <div className="flex min-w-0 flex-col gap-4">
-        <header className="flex flex-wrap items-center gap-3 rounded-2xl border border-accent/15 bg-surface/60 p-3 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.85)]">
-          <h1 className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-[0.2em]">
+    <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:gap-4">
+      <div className="flex min-w-0 flex-col gap-3 lg:gap-4">
+        <header className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 rounded-2xl border border-accent/15 bg-surface/60 p-2 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.85)] sm:gap-3 sm:p-3">
+          <h1 className="flex shrink-0 items-center gap-1 text-[10px] font-extrabold uppercase tracking-[0.12em] sm:gap-2 sm:text-sm sm:tracking-[0.2em]">
             <Sparkles
               aria-hidden="true"
-              className="size-4 text-accent drop-shadow-[0_0_10px_var(--color-accent)] motion-safe:animate-pulse"
+              className="size-3.5 text-accent drop-shadow-[0_0_10px_var(--color-accent)] motion-safe:animate-pulse sm:size-4"
             />
             <span>Duel</span>
             <span className="bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-transparent">
@@ -50,42 +56,53 @@ export function DuelBoard() {
             </span>
           </h1>
 
-          <div className="ml-auto flex flex-wrap items-center gap-2">
+          <div className="ml-auto flex min-w-0 flex-wrap items-center gap-1.5 sm:gap-2">
             <MatchTracker />
             <Button
               variant="danger"
-              size="sm"
+              className="h-11 min-w-11 px-3 text-[11px] sm:h-9"
               onClick={() => setResetOpen(true)}
               aria-haspopup="dialog"
+              aria-label="Reset duel"
             >
               <RotateCcw aria-hidden="true" className="size-3.5" />
-              Reset
+              <span className="hidden sm:inline">Reset</span>
             </Button>
           </div>
         </header>
 
+        {/* Sticky on phones so the current phase is always on screen. Turn and
+            phase sit side by side at every width, so the bar stays short. */}
         <section
           aria-label="Turn and phase"
-          className="flex flex-col gap-3 rounded-2xl border border-accent/15 bg-surface/60 p-3 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.85)] sm:flex-row sm:items-center sm:gap-4"
+          className="sticky top-0 z-30 flex flex-row items-center gap-2 rounded-2xl border border-accent/15 bg-surface/90 p-2 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.85)] sm:gap-3 sm:p-3 md:gap-4"
         >
           <TurnTracker />
           <span
             aria-hidden="true"
-            className="hidden h-12 w-px self-stretch bg-gradient-to-b from-transparent via-accent/30 to-transparent sm:block"
+            className="hidden h-12 w-px self-stretch bg-gradient-to-b from-transparent via-accent/30 to-transparent md:block"
           />
           <PhaseTracker />
         </section>
 
+        {/* Phone-only: with the panels sharing the width there is no centre
+            column, so turn-player controls get their own compact row. */}
+        <div className="rounded-2xl border border-accent/15 bg-surface/60 p-2 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.85)] md:hidden">
+          <TurnPlayerIndicator variant="bar" />
+        </div>
+
         <section
           aria-label="Players"
-          className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-stretch"
+          className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-stretch"
         >
           <LifePointPanel player={1} />
-          <TurnPlayerIndicator className="flex-row justify-center gap-4 md:flex-col md:gap-3" />
+          {/* Centre column is desktop/tablet only; on phones this same
+              component is rendered above instead. */}
+          <TurnPlayerIndicator className="hidden md:flex" />
           <LifePointPanel player={2} />
         </section>
 
-        <section aria-label="Duel utilities" className="grid gap-3 sm:grid-cols-2">
+        <section aria-label="Duel utilities" className="grid grid-cols-2 gap-2 sm:gap-3">
           <CoinFlip />
           <DiceRoller />
         </section>

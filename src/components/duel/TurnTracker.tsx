@@ -19,14 +19,14 @@ export function TurnTracker() {
         <ChevronLeft aria-hidden="true" className="size-5" />
       </Button>
 
-      <div className="min-w-[4.5rem] text-center">
+      <div className="min-w-[2.5rem] text-center sm:min-w-[4.5rem]">
         <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
           Turn
         </span>
         <p
           aria-live="polite"
           aria-atomic="true"
-          className="font-mono text-3xl font-extrabold leading-tight text-white drop-shadow-[0_0_20px_rgba(0,229,255,0.65)]"
+          className="font-mono text-2xl font-extrabold leading-tight text-white drop-shadow-[0_0_20px_rgba(0,229,255,0.65)] sm:text-3xl"
         >
           {state.currentTurn}
         </p>

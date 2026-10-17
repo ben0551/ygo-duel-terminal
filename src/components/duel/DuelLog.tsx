@@ -49,7 +49,7 @@ export function DuelLog() {
         <div className="flex gap-1.5">
           <Button
             variant="ghost"
-            size="sm"
+            className="h-11 px-3 text-[11px] sm:h-9"
             disabled={state.log.length === 0}
             onClick={handleExport}
           >
@@ -58,7 +58,7 @@ export function DuelLog() {
           </Button>
           <Button
             variant="ghost"
-            size="sm"
+            className="h-11 px-3 text-[11px] sm:h-9"
             disabled={state.log.length === 0}
             onClick={() => dispatch({ type: "CLEAR_LOG" })}
           >

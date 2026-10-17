@@ -51,7 +51,7 @@ export function DiceRoller() {
   return (
     <section
       aria-labelledby="dice-roller-heading"
-      className="flex flex-col gap-3 rounded-2xl border border-accent-2/15 bg-surface/60 p-4 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.85)]"
+      className="flex flex-col gap-2 rounded-2xl border border-accent-2/15 bg-surface/60 p-2.5 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.85)] sm:gap-3 sm:p-4"
     >
       <h3
         id="dice-roller-heading"
@@ -60,12 +60,12 @@ export function DiceRoller() {
         &#9670; Dice Roller
       </h3>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
         <div
           aria-hidden="true"
           className={cn(
-            "grid size-20 shrink-0 place-items-center rounded-2xl border-2 border-accent-2/55",
-            "bg-gradient-to-br from-accent-2/35 to-accent/15 font-mono text-3xl font-extrabold text-white",
+            "grid size-14 shrink-0 place-items-center rounded-2xl border-2 border-accent-2/55 sm:size-20",
+            "bg-gradient-to-br from-accent-2/35 to-accent/15 font-mono text-2xl font-extrabold text-white sm:text-3xl",
             "shadow-[0_0_22px_-4px_var(--color-accent-2),inset_0_2px_0_rgba(255,255,255,0.14)]",
             isRolling && "animate-[die-roll_340ms_ease-in-out_infinite]",
             "motion-reduce:animate-none",
@@ -74,21 +74,21 @@ export function DiceRoller() {
           {face ?? "?"}
         </div>
 
-        <div className="min-w-0 flex-1">
+        <div className="w-full min-w-0 flex-1">
           <p
             role="status"
             aria-live="polite"
-            className="font-mono text-2xl font-extrabold text-white drop-shadow-[0_0_22px_rgba(168,85,247,0.6)]"
+            className="text-center font-mono text-lg font-extrabold text-white drop-shadow-[0_0_22px_rgba(168,85,247,0.6)] sm:text-left sm:text-2xl"
           >
             {face === null ? "\u2014" : face}
-            <span className="block font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
+            <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-muted sm:text-[10px]">
               {isRolling ? `Rolling D${sides}` : face === null ? "Awaiting roll" : `D${sides}`}
             </span>
           </p>
           <div className="mt-1.5 flex gap-2">
             <Button
               variant="outline"
-              className="flex-1 font-mono"
+              className="h-11 flex-1 px-0 font-mono text-[13px]"
               disabled={isRolling}
               onClick={() => roll(6)}
             >
@@ -96,7 +96,7 @@ export function DiceRoller() {
             </Button>
             <Button
               variant="outline"
-              className="flex-1 font-mono"
+              className="h-11 flex-1 px-0 font-mono text-[13px]"
               disabled={isRolling}
               onClick={() => roll(20)}
             >

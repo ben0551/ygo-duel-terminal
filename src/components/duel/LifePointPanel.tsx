@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDuel } from "@/hooks/useDuel";
@@ -21,6 +22,12 @@ interface LifePointPanelProps {
 /**
  * One player's life-point console: readout plus every way to change it.
  *
+ * Layout is mobile-first and deliberately narrow. On a phone the two panels sit
+ * side by side so BOTH life totals are readable at a glance without scrolling —
+ * the one thing a duel tracker must get right. The less-used controls (custom
+ * amount, half/double/set/reset) collapse behind "More" on small screens and
+ * are always visible from `md` up.
+ *
  * Feedback is deliberately redundant — the number tweens, the panel flashes
  * green or red, and a floating delta appears — because in a real duel you are
  * looking at the table, not the screen.
@@ -36,6 +43,7 @@ export function LifePointPanel({ player }: LifePointPanelProps) {
 
   const [customAmount, setCustomAmount] = React.useState("");
   const [customInvalid, setCustomInvalid] = React.useState(false);
+  const [showExtras, setShowExtras] = React.useState(false);
 
   // Track the last real change so we can flash and show a delta. Comparing in
   // an effect (rather than during render) keeps render pure.
@@ -93,11 +101,13 @@ export function LifePointPanel({ player }: LifePointPanelProps) {
     setCustomAmount("");
   };
 
+  const label = name || `player ${player}`;
+
   return (
     <section
       aria-labelledby={`player-${player}-heading`}
       className={cn(
-        "relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-4 backdrop-blur-xl",
+        "relative flex flex-col gap-2 overflow-hidden rounded-2xl border p-2.5 backdrop-blur-xl sm:gap-3 sm:p-4",
         "bg-surface/60 shadow-[0_10px_40px_-12px_rgba(0,0,0,0.85)]",
         "transition-[border-color,box-shadow] duration-300",
         isActive
@@ -111,7 +121,7 @@ export function LifePointPanel({ player }: LifePointPanelProps) {
         "motion-reduce:animate-none",
       )}
     >
-      <header className="flex items-center gap-2">
+      <header className="flex items-center gap-1.5">
         <label htmlFor={`player-${player}-name`} className="sr-only">
           {`Player ${player} name`}
         </label>
@@ -130,8 +140,8 @@ export function LifePointPanel({ player }: LifePointPanelProps) {
             }
           }}
           className={cn(
-            "min-w-0 flex-1 border-b border-dashed border-white/15 bg-transparent pb-1",
-            "text-base font-bold uppercase tracking-wider text-ink outline-none",
+            "min-h-11 min-w-0 flex-1 border-b border-dashed border-white/15 bg-transparent py-1 pb-0.5",
+            "text-[13px] font-bold uppercase tracking-wider text-ink outline-none sm:min-h-0 sm:py-0 sm:text-base",
             "transition-colors focus:border-solid",
             player === 1 ? "focus:border-p1" : "focus:border-p2",
           )}
@@ -139,7 +149,7 @@ export function LifePointPanel({ player }: LifePointPanelProps) {
         <span
           aria-hidden="true"
           className={cn(
-            "size-2.5 shrink-0 rounded-full transition-all",
+            "size-2 shrink-0 rounded-full transition-all sm:size-2.5",
             isActive
               ? player === 1
                 ? "bg-p1 shadow-[0_0_14px_var(--color-p1)]"
@@ -147,19 +157,37 @@ export function LifePointPanel({ player }: LifePointPanelProps) {
               : "bg-white/15",
           )}
         />
+        {/* Lives in the header rather than its own row: it keeps the name field
+            a full 44px tall and saves 44px of panel height on a phone. */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-11 shrink-0 md:hidden"
+          aria-expanded={showExtras}
+          aria-controls={`player-${player}-extras`}
+          aria-label={
+            showExtras ? `Hide extra controls for ${label}` : `Show extra controls for ${label}`
+          }
+          onClick={() => setShowExtras((value) => !value)}
+        >
+          <ChevronDown
+            aria-hidden="true"
+            className={cn("size-4 transition-transform", showExtras && "rotate-180")}
+          />
+        </Button>
       </header>
 
       <div className="text-center">
         <h2
           id={`player-${player}-heading`}
-          className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted"
+          className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted sm:text-[10px]"
         >
           Life Points
         </h2>
         <p
           aria-hidden="true"
           className={cn(
-            "font-mono text-[clamp(2.6rem,8vw,4.5rem)] font-extrabold leading-none tracking-tight text-white",
+            "font-mono text-[clamp(1.75rem,10vw,4.5rem)] font-extrabold leading-none tracking-tight text-white",
             player === 1
               ? "drop-shadow-[0_0_30px_rgba(0,229,255,0.45)]"
               : "drop-shadow-[0_0_30px_rgba(168,85,247,0.45)]",
@@ -176,7 +204,7 @@ export function LifePointPanel({ player }: LifePointPanelProps) {
         <span
           aria-hidden="true"
           className={cn(
-            "mt-1 block h-5 font-mono text-sm font-bold transition-opacity duration-300",
+            "mt-0.5 block h-4 font-mono text-xs font-bold transition-opacity duration-300 sm:h-5 sm:text-sm",
             flash
               ? flash.direction === "up"
                 ? "text-success opacity-100 drop-shadow-[0_0_12px_var(--color-success)]"
@@ -190,13 +218,15 @@ export function LifePointPanel({ player }: LifePointPanelProps) {
         </span>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      {/* Two columns on phones so both players fit side by side; three once
+          there is room. Every button clears the 44px touch-target minimum. */}
+      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2">
         {ADD_DELTAS.map((amount) => (
           <Button
             key={`add-${amount}`}
             variant="success"
-            className="h-12 font-mono text-sm"
-            aria-label={`Add ${amount} life points to ${name || `player ${player}`}`}
+            className="h-11 px-0 font-mono text-[13px] sm:h-12 sm:text-sm"
+            aria-label={`Add ${amount} life points to ${label}`}
             onClick={() => dispatch({ type: "ADJUST_LP", player, delta: amount })}
           >
             +{amount}
@@ -206,8 +236,8 @@ export function LifePointPanel({ player }: LifePointPanelProps) {
           <Button
             key={`subtract-${amount}`}
             variant="danger"
-            className="h-12 font-mono text-sm"
-            aria-label={`Subtract ${amount} life points from ${name || `player ${player}`}`}
+            className="h-11 px-0 font-mono text-[13px] sm:h-12 sm:text-sm"
+            aria-label={`Subtract ${amount} life points from ${label}`}
             onClick={() => dispatch({ type: "ADJUST_LP", player, delta: -amount })}
           >
             &minus;{amount}
@@ -215,74 +245,85 @@ export function LifePointPanel({ player }: LifePointPanelProps) {
         ))}
       </div>
 
-      <div className="flex gap-2">
-        <label htmlFor={`player-${player}-custom`} className="sr-only">
-          {`Custom life point amount for player ${player}`}
-        </label>
-        <Input
-          id={`player-${player}-custom`}
-          type="number"
-          inputMode="numeric"
-          min={1}
-          placeholder="Custom amount"
-          value={customAmount}
-          aria-invalid={customInvalid}
-          onChange={(event) => setCustomAmount(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") handleApplyCustom("add");
-          }}
-          className={cn(
-            "flex-1",
-            customInvalid && "border-danger animate-[shake_300ms_ease-in-out]",
-          )}
-        />
-        <Button
-          variant="outline"
-          className="px-3 text-[11px]"
-          onClick={() => handleApplyCustom("add")}
-        >
-          Add
-        </Button>
-        <Button
-          variant="outline"
-          className="px-3 text-[11px]"
-          onClick={() => handleApplyCustom("subtract")}
-        >
-          Sub
-        </Button>
-      </div>
+      {/* Collapsed on phones to keep both life totals on one screen; always
+          open from `md` up. */}
+      <div
+        id={`player-${player}-extras`}
+        className={cn("flex-col gap-2", showExtras ? "flex" : "hidden md:flex")}
+      >
+        <div className="flex gap-1.5 sm:gap-2">
+          <label htmlFor={`player-${player}-custom`} className="sr-only">
+            {`Custom life point amount for player ${player}`}
+          </label>
+          <Input
+            id={`player-${player}-custom`}
+            type="number"
+            inputMode="numeric"
+            min={1}
+            placeholder="Amount"
+            value={customAmount}
+            aria-invalid={customInvalid}
+            onChange={(event) => setCustomAmount(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") handleApplyCustom("add");
+            }}
+            className={cn(
+              "flex-1 px-2 text-[13px] sm:text-[15px]",
+              customInvalid && "animate-[shake_300ms_ease-in-out] border-danger",
+            )}
+          />
+          <Button
+            variant="outline"
+            className="h-11 px-2 text-[11px] sm:px-3"
+            aria-label={`Add the custom amount to ${label}`}
+            onClick={() => handleApplyCustom("add")}
+          >
+            Add
+          </Button>
+          <Button
+            variant="outline"
+            className="h-11 px-2 text-[11px] sm:px-3"
+            aria-label={`Subtract the custom amount from ${label}`}
+            onClick={() => handleApplyCustom("subtract")}
+          >
+            Sub
+          </Button>
+        </div>
 
-      <div className="grid grid-cols-4 gap-2">
-        <Button
-          variant="ghost"
-          className="font-mono"
-          aria-label={`Halve ${name || `player ${player}`} life points`}
-          onClick={() => dispatch({ type: "HALVE_LP", player })}
-        >
-          &frac12;
-        </Button>
-        <Button
-          variant="ghost"
-          className="font-mono"
-          aria-label={`Double ${name || `player ${player}`} life points`}
-          onClick={() => dispatch({ type: "DOUBLE_LP", player })}
-        >
-          &times;2
-        </Button>
-        <Button
-          variant="ghost"
-          aria-label={`Set ${name || `player ${player}`} life points to the custom amount`}
-          onClick={handleSetToCustom}
-        >
-          Set
-        </Button>
-        <Button
-          variant="ghost"
-          aria-label={`Restore ${name || `player ${player}`} to starting life points`}
-          onClick={() => dispatch({ type: "RESET_LP", player })}
-        >
-          Reset
-        </Button>
+        <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+          <Button
+            variant="ghost"
+            className="h-11 px-0 font-mono"
+            aria-label={`Halve ${label} life points`}
+            onClick={() => dispatch({ type: "HALVE_LP", player })}
+          >
+            &frac12;
+          </Button>
+          <Button
+            variant="ghost"
+            className="h-11 px-0 font-mono"
+            aria-label={`Double ${label} life points`}
+            onClick={() => dispatch({ type: "DOUBLE_LP", player })}
+          >
+            &times;2
+          </Button>
+          <Button
+            variant="ghost"
+            className="h-11 px-0 text-[11px]"
+            aria-label={`Set ${label} life points to the custom amount`}
+            onClick={handleSetToCustom}
+          >
+            Set
+          </Button>
+          <Button
+            variant="ghost"
+            className="h-11 px-0 text-[11px]"
+            aria-label={`Restore ${label} to starting life points`}
+            onClick={() => dispatch({ type: "RESET_LP", player })}
+          >
+            Reset
+          </Button>
+        </div>
       </div>
     </section>
   );

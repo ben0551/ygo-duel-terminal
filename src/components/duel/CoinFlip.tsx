@@ -52,7 +52,7 @@ export function CoinFlip() {
   return (
     <section
       aria-labelledby="coin-flip-heading"
-      className="flex flex-col gap-3 rounded-2xl border border-accent/15 bg-surface/60 p-4 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.85)]"
+      className="flex flex-col gap-2 rounded-2xl border border-accent/15 bg-surface/60 p-2.5 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(0,0,0,0.85)] sm:gap-3 sm:p-4"
     >
       <h3
         id="coin-flip-heading"
@@ -61,37 +61,37 @@ export function CoinFlip() {
         &#9679; Coin Flip
       </h3>
 
-      <div className="flex items-center gap-4 [perspective:700px]">
+      <div className="flex flex-col items-center gap-2 [perspective:700px] sm:flex-row sm:gap-4">
         <div
           aria-hidden="true"
           className={cn(
-            "relative size-20 shrink-0 transition-transform [transform-style:preserve-3d]",
+            "relative size-14 shrink-0 transition-transform [transform-style:preserve-3d] sm:size-20",
             "duration-[1150ms] ease-[cubic-bezier(0.22,0.75,0.25,1)] motion-reduce:transition-none",
           )}
           style={{ transform: `rotateY(${rotation}deg)` }}
         >
-          <span className="absolute inset-0 grid place-items-center rounded-full border-2 border-accent/55 bg-[radial-gradient(circle_at_34%_28%,#EAF9FF,#7FD8F5_42%,#0E7FA8_100%)] font-mono text-lg font-extrabold tracking-wide text-[#04222E] shadow-[0_0_16px_var(--color-accent)] [backface-visibility:hidden]">
+          <span className="absolute inset-0 grid place-items-center rounded-full border-2 border-accent/55 bg-[radial-gradient(circle_at_34%_28%,#EAF9FF,#7FD8F5_42%,#0E7FA8_100%)] font-mono text-[13px] font-extrabold tracking-wide text-[#04222E] shadow-[0_0_16px_var(--color-accent)] [backface-visibility:hidden] sm:text-lg">
             HEADS
           </span>
-          <span className="absolute inset-0 grid place-items-center rounded-full border-2 border-accent-2/55 bg-[radial-gradient(circle_at_34%_28%,#F0E6FF,#C9A6F5_42%,#6D28D9_100%)] font-mono text-lg font-extrabold tracking-wide text-[#210B3A] shadow-[0_0_16px_var(--color-accent-2)] [backface-visibility:hidden] [transform:rotateY(180deg)]">
+          <span className="absolute inset-0 grid place-items-center rounded-full border-2 border-accent-2/55 bg-[radial-gradient(circle_at_34%_28%,#F0E6FF,#C9A6F5_42%,#6D28D9_100%)] font-mono text-[13px] font-extrabold tracking-wide text-[#210B3A] shadow-[0_0_16px_var(--color-accent-2)] [backface-visibility:hidden] [transform:rotateY(180deg)] sm:text-lg">
             TAILS
           </span>
         </div>
 
-        <div className="min-w-0 flex-1">
+        <div className="w-full min-w-0 flex-1">
           <p
             role="status"
             aria-live="polite"
-            className="font-mono text-2xl font-extrabold uppercase tracking-widest text-white drop-shadow-[0_0_22px_rgba(0,229,255,0.6)]"
+            className="text-center font-mono text-lg font-extrabold uppercase tracking-widest text-white drop-shadow-[0_0_22px_rgba(0,229,255,0.6)] sm:text-left sm:text-2xl"
           >
             {result === null ? "\u2014" : result}
-            <span className="block font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
+            <span className="block font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-muted sm:text-[10px]">
               {isFlipping ? "Flipping" : result === null ? "Awaiting flip" : "Face up"}
             </span>
           </p>
           <Button
             variant="primary"
-            className="mt-1.5 w-full"
+            className="mt-1.5 h-11 w-full text-[11px] sm:text-[13px]"
             disabled={isFlipping}
             onClick={handleFlip}
           >

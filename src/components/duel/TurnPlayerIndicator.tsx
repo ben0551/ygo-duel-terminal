@@ -7,6 +7,16 @@ import { activePlayerOf, playerName } from "@/lib/duel";
 import { cn } from "@/lib/utils";
 import { PLAYER_IDS, type PlayerId } from "@/types/duel";
 
+interface TurnPlayerIndicatorProps {
+  className?: string;
+  /**
+   * `column` is the tall centre column that sits between the two life-point
+   * panels on wide screens. `bar` is a single compact row for phones, where
+   * both panels share the width instead and this moves into the turn bar.
+   */
+  variant?: "column" | "bar";
+}
+
 /**
  * Whose turn it is, plus the two controls that matter for turn order.
  *
@@ -17,22 +27,36 @@ import { PLAYER_IDS, type PlayerId } from "@/types/duel";
  * "Pass turn" is the explicit version of that: finish my turn now.
  * "First turn" sets who owns turn 1, which is what the coin toss decides.
  */
-export function TurnPlayerIndicator({ className }: { className?: string }) {
+export function TurnPlayerIndicator({
+  className,
+  variant = "column",
+}: TurnPlayerIndicatorProps) {
   const { state, dispatch } = useDuel();
   const activeId = activePlayerOf(state);
   const active = playerName(state, activeId);
   const isPlayerTwo = activeId === 2;
+  const isBar = variant === "bar";
 
   return (
-    <div className={cn("flex flex-col items-center justify-center gap-3", className)}>
+    <div
+      className={cn(
+        isBar
+          ? "flex w-full flex-wrap items-center gap-2"
+          : "flex flex-col items-center justify-center gap-3",
+        className,
+      )}
+    >
       <span
         aria-hidden="true"
-        className="hidden size-14 place-items-center rounded-full border border-white/10 bg-black/30 font-mono text-lg font-extrabold tracking-widest text-white/30 md:grid"
+        className={cn(
+          "place-items-center rounded-full border border-white/10 bg-black/30 font-mono font-extrabold tracking-widest text-white/30",
+          isBar ? "hidden size-9 text-[11px] sm:grid" : "hidden size-14 text-lg md:grid",
+        )}
       >
         VS
       </span>
 
-      <div className="text-center">
+      <div className={cn(isBar ? "min-w-0 text-left" : "text-center")}>
         <span className="block text-[10px] font-bold uppercase tracking-[0.16em] text-muted">
           Turn player
         </span>
@@ -40,7 +64,7 @@ export function TurnPlayerIndicator({ className }: { className?: string }) {
           aria-live="polite"
           aria-atomic="true"
           className={cn(
-            "block text-xs font-bold uppercase tracking-wider",
+            "block truncate text-xs font-bold uppercase tracking-wider",
             isPlayerTwo
               ? "text-p2 drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]"
               : "text-p1 drop-shadow-[0_0_12px_rgba(0,229,255,0.6)]",
@@ -52,7 +76,7 @@ export function TurnPlayerIndicator({ className }: { className?: string }) {
 
       <Button
         variant="primary"
-        className="px-3 text-[11px]"
+        className={cn("h-11 text-[11px]", isBar ? "ml-auto px-3" : "px-3")}
         aria-label={`End ${active}'s turn and pass it to the opponent`}
         onClick={() => dispatch({ type: "PASS_TURN" })}
       >
@@ -60,10 +84,19 @@ export function TurnPlayerIndicator({ className }: { className?: string }) {
         Pass turn
       </Button>
 
-      <fieldset className="flex items-center gap-1.5">
+      <fieldset className="flex items-center gap-1">
         <legend className="sr-only">Which player takes the first turn</legend>
-        <Flag aria-hidden="true" className="size-3 text-muted" />
-        <span aria-hidden="true" className="text-[9px] font-bold uppercase tracking-widest text-muted">
+        <Flag
+          aria-hidden="true"
+          className={cn("size-3 shrink-0 text-muted", isBar && "hidden sm:block")}
+        />
+        <span
+          aria-hidden="true"
+          className={cn(
+            "text-[9px] font-bold uppercase tracking-widest text-muted",
+            isBar && "hidden sm:inline",
+          )}
+        >
           First
         </span>
         {PLAYER_IDS.map((player: PlayerId) => {
@@ -76,8 +109,9 @@ export function TurnPlayerIndicator({ className }: { className?: string }) {
               aria-label={`${playerName(state, player)} takes turn 1`}
               onClick={() => dispatch({ type: "SET_FIRST_PLAYER", player })}
               className={cn(
-                "rounded-md border px-2 py-1 font-mono text-[10px] font-bold",
+                "rounded-md border font-mono font-bold",
                 "outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent",
+                isBar ? "h-11 min-w-11 px-2 text-[11px]" : "px-2 py-1 text-[10px]",
                 selected
                   ? player === 1
                     ? "border-p1/60 bg-p1/20 text-p1"
