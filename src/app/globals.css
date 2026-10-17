@@ -1,0 +1,215 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Design tokens
+   The app is dark-only, so the palette is defined once rather than behind a
+   `dark:` variant. Declaring them in @theme makes every token available as a
+   Tailwind utility (bg-surface, text-accent, border-p1, …).
+   ========================================================================== */
+@theme {
+  --color-surface: #0a0f1f;
+  --color-surface-deep: #05070f;
+  --color-ink: #e6f1ff;
+  --color-muted: #7c8da8;
+
+  --color-accent: #00e5ff;
+  --color-accent-2: #a855f7;
+
+  --color-p1: #00e5ff;
+  --color-p2: #a855f7;
+
+  --color-danger: #ff3b5c;
+  --color-success: #22e07a;
+}
+
+/* `inline` so the utilities emit the var() reference itself; the Geist
+   variables are injected on <html> by next/font. */
+@theme inline {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-surface-deep);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    letter-spacing: 0.01em;
+    overflow-x: hidden;
+  }
+
+  /* Ambient duel-disk backdrop: two glows plus a faint grid. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(46% 42% at 12% 8%, rgba(0, 229, 255, 0.18), transparent 62%),
+      radial-gradient(44% 44% at 88% 4%, rgba(168, 85, 247, 0.18), transparent 64%),
+      radial-gradient(58% 50% at 50% 108%, rgba(59, 130, 246, 0.16), transparent 66%),
+      linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-deep) 100%);
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
+    background-size: 46px 46px;
+    mask-image: radial-gradient(120% 90% at 50% 0%, #000 25%, transparent 85%);
+    -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 25%, transparent 85%);
+  }
+
+  /* Focus rings are supplied per-component via focus-visible:ring-*. */
+  :focus-visible {
+    outline: none;
+  }
+}
+
+/* ==========================================================================
+   Keyframes
+   Referenced from components via arbitrary animate-[…] utilities.
+   ========================================================================== */
+
+@keyframes flash-damage {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 92, 0);
+  }
+  22% {
+    box-shadow:
+      0 0 46px 7px rgba(255, 59, 92, 0.7),
+      inset 0 0 60px rgba(255, 59, 92, 0.22);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 92, 0);
+  }
+}
+
+@keyframes flash-heal {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 224, 122, 0);
+  }
+  22% {
+    box-shadow:
+      0 0 46px 7px rgba(34, 224, 122, 0.65),
+      inset 0 0 60px rgba(34, 224, 122, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 224, 122, 0);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes log-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes die-roll {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-16deg) scale(1.12);
+  }
+  50% {
+    transform: rotate(14deg) scale(0.94);
+  }
+  75% {
+    transform: rotate(-8deg) scale(1.07);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+@utility scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 229, 255, 0.45) transparent;
+}
+
+/* ==========================================================================
+   Reduced motion
+   A blanket safety net on top of the per-component `motion-reduce:` classes:
+   animation is never the only way to read a value.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
