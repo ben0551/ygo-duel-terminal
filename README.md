@@ -4,6 +4,8 @@ A life point, turn and phase tracker for Yu-Gi-Oh! duels. Built for tournament
 play on a phone, with a per-phase rules reference so newer players always know
 what they are allowed to do.
 
+**▶ Live: <https://ben0551.github.io/ygo-duel-terminal/>**
+
 No backend, no database, no accounts. All state lives in `localStorage`.
 
 ---
@@ -195,6 +197,29 @@ shadcn/ui-style components on Radix primitives · Vitest.
 
 ## Deployment
 
-The app is fully static — `next build` prerenders `/` and everything runs
-client-side. Any static or Node host works; on Vercel, import the repository and
-deploy with no configuration.
+The app is fully static, so it is hosted on **GitHub Pages** at
+<https://ben0551.github.io/ygo-duel-terminal/>.
+
+Every push to `main` triggers `.github/workflows/deploy.yml`, which runs the
+type check, unit tests and lint, builds a static export, and publishes it to the
+`gh-pages` branch that Pages serves. A failing commit therefore cannot replace a
+working site.
+
+To reproduce the Pages build locally:
+
+```bash
+GITHUB_PAGES=1 npm run build   # writes ./out
+npx serve out                  # or any static file server
+```
+
+`GITHUB_PAGES=1` switches `next.config.ts` to `output: "export"` and applies the
+`/ygo-duel-terminal` base path that project pages need. Two details matter here:
+
+- **`.nojekyll` is required.** GitHub Pages runs Jekyll by default, and Jekyll
+  ignores underscore-prefixed directories — which would silently break every
+  `/_next/` asset. The workflow writes this file automatically.
+- **Assets are served from a subpath**, so `basePath` and `assetPrefix` must both
+  be set, or the CSS and JS 404 on the deployed site while working fine locally.
+
+On a machine with a small memory limit, add `LOW_MEMORY_BUILD=1` to force the
+build to a single worker (see the note in `next.config.ts`).

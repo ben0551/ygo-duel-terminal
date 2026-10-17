@@ -1,0 +1,57 @@
+name: Deploy to GitHub Pages
+
+# The app is fully static, so every push to main rebuilds it and republishes the
+# exported site to the `gh-pages` branch, which GitHub Pages serves.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build static site
+        # GITHUB_PAGES switches next.config.ts into static-export mode with the
+        # /ygo-duel-terminal base path that project pages require.
+        run: npm run build
+        env:
+          GITHUB_PAGES: "1"
+
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          publish_branch: gh-pages
+          # Keeps GitHub Pages from running Jekyll, which would ignore the
+          # underscore-prefixed /_next/ asset directory and break the site.
+          disable_nojekyll: false
