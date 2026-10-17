@@ -1,5 +1,5 @@
-:HL["/ygo-duel-terminal/_next/static/chunks/0iqgq4n-a2lye.css","style"]
+:HL["/ygo-duel-terminal/_next/static/chunks/4433n2tbik1k2.css","style"]
 :HL["/ygo-duel-terminal/_next/static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/ygo-duel-terminal/_next/static/media/caa3a2e1cccd8315-s.p.0wgildi0cnwt9.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 1:[["children",{"s":"__PAGE__","h":160}]]
-0:{"b":"l0nYoY3CJ1ZFY2LEWxl6y","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"0k-KQEpjgSt4YFnElm2S7","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

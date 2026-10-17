@@ -1,4 +1,4 @@
-:HL["/ygo-duel-terminal/_next/static/chunks/0iqgq4n-a2lye.css","style"]
+:HL["/ygo-duel-terminal/_next/static/chunks/4433n2tbik1k2.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":"/_not-found","h":96,"c":"$Q2"}]]
-0:{"b":"l0nYoY3CJ1ZFY2LEWxl6y","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"0k-KQEpjgSt4YFnElm2S7","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
